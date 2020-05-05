@@ -3,7 +3,7 @@
 WeiyunHelper 是微云的辅助脚本，拥有以下功能：
 
 - [x] 🔗 下载文件时支持生成 AriaNg 的下载链接
-- [ ] 🧲 支持自动（快捷）下载磁力链链接
+- [x] 🧲 支持粘贴自动（快捷）下载磁力链链接
 - [ ] 💡 你有什么[想法](https://github.com/loo2k/WeiyunHelper/issues)？
 
 ## 如何使用
@@ -11,6 +11,14 @@ WeiyunHelper 是微云的辅助脚本，拥有以下功能：
 使用前需要先安装 [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) 扩展，安装完成后访问下方的安装地址：
 
 👉🏼[https://cdn.jsdelivr.net/gh/loo2k/WeiyunHelper@master/weiyun.user.js](https://cdn.jsdelivr.net/gh/loo2k/WeiyunHelper@master/weiyun.user.js)
+
+**🔗 下载文件时支持生成 AriaNg 的下载链接**
+
+![aria2](./screenshots/aria2.gif)
+
+**🧲 支持粘贴自动（快捷）下载磁力链链接**
+
+![paste](./screenshots/paste-detect.gif)
 
 ## 声明
 
