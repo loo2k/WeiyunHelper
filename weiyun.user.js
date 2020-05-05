@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WeiyunHelper
 // @namespace    https://pigfly.im/
-// @version      0.0.1
+// @version      0.0.2
 // @description  微云下载时文件支持导出到 aria2 下载
 // @author       Luke
 // @match        https://www.weiyun.com/*
@@ -149,82 +149,96 @@
   }
   `);
 
-  // 获取 axios 对象
-  const axios = webpackJsonp([], [], ['tIFN']);
-
-  axios.interceptors.response.use(
-    (response) => {
-      let { data, config } = response;
-      let isDownload = false;
-      let isSuccess = data.data.rsp_header.retcode === 0;
-      let isDiskFileBatchDownload = config.url.indexOf('/webapp/json/weiyunQdiskClient/DiskFileBatchDownload') > -1;
-      let isDiskFilePackageDownload = config.url.indexOf('/webapp/json/weiyunQdisk/DiskFilePackageDownload') > -1;
-      let downloadUrl = '';
-      let cookieName = '';
-      let cookieValue = '';
-      let URI = {};
-      let fileName = '';
-
-      // 单个文件下载
-      if (
-        isSuccess &&
-        isDiskFileBatchDownload &&
-        data.data &&
-        data.data.rsp_body &&
-        data.data.rsp_body.RspMsg_body &&
-        data.data.rsp_body.RspMsg_body.file_list &&
-        data.data.rsp_body.RspMsg_body.file_list.length > 0
-      ) {
-        let fileList = data.data.rsp_body.RspMsg_body.file_list;
-        isDownload = true;
-        downloadUrl = fileList[0].https_download_url;
-        cookieName = fileList[0].cookie_name;
-        cookieValue = fileList[0].cookie_value;
-        URI = new URL(downloadUrl);
-        fileName = decodeURI(URI.pathname.substr(URI.pathname.lastIndexOf('/') + 1));
+  const chunkId = Math.random().toString(36).substring(7);
+  webpackJsonp([7890], {
+    [chunkId]: function (m, e, r) {
+      let modules = Object.values(r.c)
+        .filter((x) => !!x.exports.Axios)
+        .map((x) => x.exports);
+      
+      // 如果没有检查到 axios 对象则退出
+      if (modules.length === 0) {
+        console.error('没有检测到 axios 模块，已退出 WeiyunHelper');
+        return false;
       }
 
-      // 批量下载文件
-      if (
-        isSuccess && 
-        isDiskFilePackageDownload && 
-        data.data && 
-        data.data.rsp_body && 
-        data.data.rsp_body.RspMsg_body
-      ) {
-        let file = data.data.rsp_body.RspMsg_body;
-        isDownload = true;
-        downloadUrl = file.https_download_url;
-        cookieName = file.cookie_name;
-        cookieValue = file.cookie_value;
-        fileName = `微云合并下载文件_${new Date().Format('yyyy-MM-dd hh:mm:ss')}.zip`;
-      }
+      let axios = modules[0];
+      axios.interceptors.response.use(
+        (response) => {
+          let { data, config } = response;
+          let isDownload = false;
+          let isSuccess = data.data.rsp_header.retcode === 0;
+          let isDiskFileBatchDownload =
+            config.url.indexOf('/webapp/json/weiyunQdiskClient/DiskFileBatchDownload') > -1;
+          let isDiskFilePackageDownload = config.url.indexOf('/webapp/json/weiyunQdisk/DiskFilePackageDownload') > -1;
+          let downloadUrl = '';
+          let cookieName = '';
+          let cookieValue = '';
+          let URI = {};
+          let fileName = '';
 
-      if (isDownload) {
-        let ariaNgUrl = `http://aria2.me/aria-ng/#!/new/task?url=${btoa(
-          downloadUrl
-        )}&header=Cookie:${cookieName}=${cookieValue}&out=${encodeURI(fileName)}`;
+          // 单个文件下载
+          if (
+            isSuccess &&
+            isDiskFileBatchDownload &&
+            data.data &&
+            data.data.rsp_body &&
+            data.data.rsp_body.RspMsg_body &&
+            data.data.rsp_body.RspMsg_body.file_list &&
+            data.data.rsp_body.RspMsg_body.file_list.length > 0
+          ) {
+            let fileList = data.data.rsp_body.RspMsg_body.file_list;
+            isDownload = true;
+            downloadUrl = fileList[0].https_download_url;
+            cookieName = fileList[0].cookie_name;
+            cookieValue = fileList[0].cookie_value;
+            URI = new URL(downloadUrl);
+            fileName = decodeURI(URI.pathname.substr(URI.pathname.lastIndexOf('/') + 1));
+          }
 
-        console.log('文件名称:', fileName);
-        console.log('下载地址:', downloadUrl);
-        console.log('请求参数:', `Cookie:${cookieName}=${cookieValue}`);
-        console.log('AriaNg URL:', ariaNgUrl);
+          // 批量下载文件
+          if (
+            isSuccess &&
+            isDiskFilePackageDownload &&
+            data.data &&
+            data.data.rsp_body &&
+            data.data.rsp_body.RspMsg_body
+          ) {
+            let file = data.data.rsp_body.RspMsg_body;
+            isDownload = true;
+            downloadUrl = file.https_download_url;
+            cookieName = file.cookie_name;
+            cookieValue = file.cookie_value;
+            fileName = `微云合并下载文件_${new Date().Format('yyyy-MM-dd hh:mm:ss')}.zip`;
+          }
 
-        // 发送消息通知提醒使用 ariaNg 下载
-        wyNotify({
-          title: `开始下载: ${fileName}`,
-          description: '点击此处使用 AriaNg 下载',
-          onclick: function () {
-            window.open(ariaNgUrl);
-          },
-        });
-      }
+          if (isDownload) {
+            let ariaNgUrl = `http://aria2.me/aria-ng/#!/new/task?url=${btoa(
+              downloadUrl
+            )}&header=Cookie:${cookieName}=${cookieValue}&out=${encodeURI(fileName)}`;
 
-      return response;
+            console.log('文件名称:', fileName);
+            console.log('下载地址:', downloadUrl);
+            console.log('请求参数:', `Cookie:${cookieName}=${cookieValue}`);
+            console.log('AriaNg URL:', ariaNgUrl);
+
+            // 发送消息通知提醒使用 ariaNg 下载
+            wyNotify({
+              title: `开始下载: ${fileName}`,
+              description: '点击此处使用 AriaNg 下载',
+              onclick: function () {
+                window.open(ariaNgUrl);
+              },
+            });
+          }
+
+          return response;
+        },
+        (error) => {
+          console.log('发生错误', error);
+          return Promise.reject(error);
+        }
+      );
     },
-    (error) => {
-      console.log('发生错误', error);
-      return Promise.reject(error);
-    }
-  );
+  }, [chunkId]);
 })();
