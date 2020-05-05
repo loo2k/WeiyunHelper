@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WeiyunHelper
-// @namespace    https://pigfly.im/
-// @version      0.0.2
+// @namespace    https://github.com/loo2k/WeiyunHelper/
+// @version      0.0.4
 // @description  微云下载时文件支持导出到 aria2 下载
 // @author       Luke
 // @match        https://www.weiyun.com/*
@@ -241,4 +241,50 @@
       );
     },
   }, [chunkId]);
+
+
+  // 打开离线下载窗口并填写链接
+  const openModalBt = (text = '') => {
+    let wyCreateBtn = document.querySelectorAll('.mod-action-wrap-create');
+    let $wyCreateBtn = wyCreateBtn[0] && wyCreateBtn[0].__vue__;
+    $wyCreateBtn.offlineDownload();
+
+    // 点击使用磁力链下载
+    let modalBtNav = document.querySelectorAll('.modal-dialog-bt .modal-tab-nav .tab-nav-item');
+    modalBtNav.forEach(nav => {
+      if (nav.innerText.trim() === '链接下载') {
+        nav.click();
+      }
+    });
+
+    setTimeout(() => {
+      // 填写 magent 或者 ed2k 链接
+      let urlTextarea = document.querySelector('.modal-dialog-bt .tab-cont-item.online .input-block');
+      if (text) {
+        urlTextarea.value = text;
+        urlTextarea.dispatchEvent(new Event('input'));
+      }
+    }, 0);
+  }
+
+  // 粘贴磁力链或者 ed2k 时自动启动下载
+  document.addEventListener('paste', (event) => {
+    // 针对非输入框的粘贴时间
+    if (['TEXTAREA', 'INPUT'].includes(event.target.tagName)) {
+      return;
+    }
+
+    // 剪切板数据对象
+    let clipboardData = event.clipboardData || window.clipboardData;
+    
+    // 剪切板对象可以获取
+    if (!clipboardData) { return; }
+    
+    let paste = clipboardData.getData('text');
+    let isEd2k = /^ed2k:\/\//ig.test(paste);
+    let isMagent = /^magnet:/ig.test(paste);
+    if (isEd2k || isMagent) {
+      openModalBt(paste);
+    }
+  });
 })();
