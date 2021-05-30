@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         WeiyunHelper
+// @name         WeiyunHelper - 微云 Arial 下载辅助
 // @namespace    https://github.com/loo2k/WeiyunHelper/
 // @version      0.0.5
 // @description  微云下载时文件支持导出到 aria2 下载
@@ -7,8 +7,8 @@
 // @match        https://www.weiyun.com/*
 // @grant        none
 // @run-at       document-end
-// @updateURL    https://cdn.jsdelivr.net/gh/loo2k/WeiyunHelper@master/weiyun.user.js
-// @downloadURL  https://cdn.jsdelivr.net/gh/loo2k/WeiyunHelper@master/weiyun.user.js
+// @updateURL    https://github.com/loo2k/WeiyunHelper/raw/master/weiyun.user.js
+// @downloadURL  https://github.com/loo2k/WeiyunHelper/raw/master/weiyun.user.js
 // @supportURL   https://github.com/loo2k/WeiyunHelper/issues
 // ==/UserScript==
 

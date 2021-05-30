@@ -10,7 +10,7 @@ WeiyunHelper 是微云的辅助脚本，拥有以下功能：
 
 使用前需要先安装 [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) 扩展，安装完成后访问下方的安装地址：
 
-👉🏼[https://cdn.jsdelivr.net/gh/loo2k/WeiyunHelper@master/weiyun.user.js](https://cdn.jsdelivr.net/gh/loo2k/WeiyunHelper@master/weiyun.user.js)
+👉🏼 [https://greasyfork.org/zh-CN/scripts/402669-weiyunhelper](https://greasyfork.org/zh-CN/scripts/402669-weiyunhelper)
 
 **🔗 下载文件时支持通过 AriaNg 下载**
 
