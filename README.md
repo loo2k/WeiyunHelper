@@ -2,7 +2,7 @@
 
 WeiyunHelper 是微云的辅助脚本，拥有以下功能：
 
-- [x] 🔗 下载文件时支持生成 AriaNg 的下载链接
+- [x] 🔗 下载文件时支持通过 AriaNg 下载
 - [x] 🧲 支持粘贴自动（快捷）下载磁力链链接
 - [ ] 💡 你有什么[想法](https://github.com/loo2k/WeiyunHelper/issues)？
 
@@ -12,7 +12,7 @@ WeiyunHelper 是微云的辅助脚本，拥有以下功能：
 
 👉🏼[https://cdn.jsdelivr.net/gh/loo2k/WeiyunHelper@master/weiyun.user.js](https://cdn.jsdelivr.net/gh/loo2k/WeiyunHelper@master/weiyun.user.js)
 
-**🔗 下载文件时支持生成 AriaNg 的下载链接**
+**🔗 下载文件时支持通过 AriaNg 下载**
 
 ![aria2](./screenshots/aria2.gif)
 
@@ -25,7 +25,7 @@ WeiyunHelper 是微云的辅助脚本，拥有以下功能：
 WeiyunHelper 仅供个人学习交流，严禁用于商业用途。
 
 ## License
- 
+
 The MIT License (MIT)
 
 Copyright (c) 2015 Chris Kibble

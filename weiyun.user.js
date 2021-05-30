@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         WeiyunHelper
 // @namespace    https://github.com/loo2k/WeiyunHelper/
-// @version      0.0.4
+// @version      0.0.5
 // @description  微云下载时文件支持导出到 aria2 下载
 // @author       Luke
 // @match        https://www.weiyun.com/*
 // @grant        none
+// @run-at       document-end
 // @updateURL    https://cdn.jsdelivr.net/gh/loo2k/WeiyunHelper@master/weiyun.user.js
 // @downloadURL  https://cdn.jsdelivr.net/gh/loo2k/WeiyunHelper@master/weiyun.user.js
 // @supportURL   https://github.com/loo2k/WeiyunHelper/issues
@@ -31,217 +32,115 @@
     return fmt;
   };
 
-  const addGlobalStyle = (css) => {
-    var head, style;
-    head = document.getElementsByTagName('head')[0];
-    if (!head) {
-      return;
-    }
-    style = document.createElement('style');
-    style.type = 'text/css';
-    style.innerHTML = css;
-    head.appendChild(style);
-  };
+  const injectChunkId = Math.random().toString(36).substring(7);
+  webpackJsonp([7891], {
+    [injectChunkId]: function(modules, exports, require) {
+      // 寻找云盘操作 API 模块
+      const diskServices = Object.values(require.c)
+        .filter((x) => x.exports && typeof x.exports.namespace === 'function' && typeof x.exports.namespace('PERSON').fetchUserInfo === 'function')
+        .map((x) => x.exports.namespace);
+      const diskService = diskServices && diskServices[0]('PERSON');
 
-  const wyNotify = (options) => {
-    options = {
-      timeout: 5000,
-      ...options,
-    };
-
-    // 判断是否已经创建 wrapper
-    let wyNotifyWrapper = document.getElementById('wyNotify');
-    if (!wyNotifyWrapper) {
-      wyNotifyWrapper = document.createElement('div');
-      wyNotifyWrapper.setAttribute('id', 'wyNotify');
-      wyNotifyWrapper.setAttribute('class', 'wy-notify__wrap');
-      document.body.appendChild(wyNotifyWrapper);
-    }
-
-    let wyNotifyEl = document.createElement('div');
-    let wyNotifyContent = `
-    <div class="wy-notify__content">
-    <div class="wy-notify__title">${options.title}</div>
-    <div class="wy-notify__desc">${options.description}</div>
-    </div>`;
-
-    wyNotifyEl.setAttribute('class', 'wy-notify');
-    wyNotifyEl.innerHTML = wyNotifyContent;
-    wyNotifyWrapper.appendChild(wyNotifyEl);
-
-    setTimeout(() => {
-      wyNotifyEl.setAttribute('class', 'wy-notify wy-notify--show');
-    }, 0);
-
-    // 绑定事件
-    if (typeof options.onclick === 'function') {
-      wyNotifyEl.addEventListener('click', options.onclick);
-    }
-
-    setTimeout(() => {
-      wyNotifyEl.addEventListener(
-        'transitionend',
-        () => {
-          wyNotifyWrapper.removeChild(wyNotifyEl);
-        },
-        { once: true }
-      );
-      wyNotifyEl.setAttribute('class', 'wy-notify');
-    }, options.timeout);
-  };
-
-  addGlobalStyle(`
-  .wy-notify__wrap {
-    position: fixed;
-    top: 30px;
-    right: 30px;
-    z-index: 999999;
-  }
-
-  .wy-notify {
-    padding: 12px 15px;
-    border-radius: 3px;
-    font-size: 14px;
-    background-color: rgba(0, 0, 0, .8);
-    color: #ffffff;
-    line-height: 1.4;
-    transition: all .4s cubic-bezier(0, 0, 0.2, 1);
-    cursor: pointer;
-    opacity: 0;
-    transform: translate(0, 50px);
-    display: flex;
-    align-items: center;
-    margin-bottom: 12px;
-  }
-
-  .wy-notify::before {
-    content: '💁‍♀️';
-    margin-right: 10px;
-    font-size: 1.8em;
-    width: 25px;
-  }
-
-  .wy-notify__content {
-    max-width: 260px;
-  }
-
-  .wy-notify__title {
-    font-size: 14px;
-    font-weight: bold;
-    color: #ffffff;
-    margin-bottom: 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .wy-notify__desc {
-    font-size: 12px;
-    color: #dddddd;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .wy-notify.wy-notify--show {
-    transform: translate(0, 0);
-    opacity: 1;
-  }
-  `);
-
-  const chunkId = Math.random().toString(36).substring(7);
-  webpackJsonp([7890], {
-    [chunkId]: function (m, e, r) {
-      let modules = Object.values(r.c)
-        .filter((x) => !!x.exports.Axios)
-        .map((x) => x.exports);
-      
-      // 如果没有检查到 axios 对象则退出
-      if (modules.length === 0) {
-        console.error('没有检测到 axios 模块，已退出 WeiyunHelper');
+      if (diskServices.length === 0) {
+        console.error('没有检测到适配模块，已退出 WeiyunHelper');
+        console.error('你可以到 https://github.com/loo2k/WeiyunHelper/issues 向作者反馈问题')
         return false;
       }
 
-      let axios = modules[0];
-      axios.interceptors.response.use(
-        (response) => {
-          let { data, config } = response;
-          let isDownload = false;
-          let isSuccess = data.data.rsp_header.retcode === 0;
-          let isDiskFileBatchDownload =
-            config.url.indexOf('/webapp/json/weiyunQdiskClient/DiskFileBatchDownload') > -1;
-          let isDiskFilePackageDownload = config.url.indexOf('/webapp/json/weiyunQdisk/DiskFilePackageDownload') > -1;
+      // 下载选中的文件
+      function downloadSelectedFiles() {
+        let request = null;
+        const selected = document.querySelectorAll('.list-group-item.checked.act');
+        const fileNodes = Array.from(selected).map(item => item.__vue__.fileNode);
+        if (fileNodes.length === 1 && !fileNodes[0].isDir()) {
+          request = diskService.fetchDownloadFileInfo({ fileNodes });
+        } else {
+          request = diskService.fetchPackDownloadDirFileInfo({ fileNodes });
+        }
+
+        request.then((ret) => {
           let downloadUrl = '';
           let cookieName = '';
           let cookieValue = '';
           let URI = {};
           let fileName = '';
-
-          // 单个文件下载
-          if (
-            isSuccess &&
-            isDiskFileBatchDownload &&
-            data.data &&
-            data.data.rsp_body &&
-            data.data.rsp_body.RspMsg_body &&
-            data.data.rsp_body.RspMsg_body.file_list &&
-            data.data.rsp_body.RspMsg_body.file_list.length > 0
-          ) {
-            let fileList = data.data.rsp_body.RspMsg_body.file_list;
-            isDownload = true;
-            downloadUrl = fileList[0].https_download_url;
-            cookieName = fileList[0].cookie_name;
-            cookieValue = fileList[0].cookie_value;
+          if (ret.file_list) {
+            downloadUrl = ret.file_list[0].https_download_url;
+            cookieName = ret.file_list[0].cookie_name;
+            cookieValue = ret.file_list[0].cookie_value;
             URI = new URL(downloadUrl);
             fileName = decodeURI(URI.pathname.substr(URI.pathname.lastIndexOf('/') + 1));
-          }
-
-          // 批量下载文件
-          if (
-            isSuccess &&
-            isDiskFilePackageDownload &&
-            data.data &&
-            data.data.rsp_body &&
-            data.data.rsp_body.RspMsg_body
-          ) {
-            let file = data.data.rsp_body.RspMsg_body;
-            isDownload = true;
-            downloadUrl = file.https_download_url;
-            cookieName = file.cookie_name;
-            cookieValue = file.cookie_value;
+          } else {
+            downloadUrl = ret.https_download_url;
+            cookieName = ret.cookie_name;
+            cookieValue = ret.cookie_value;
             fileName = `微云合并下载文件_${new Date().Format('yyyy-MM-dd hh:mm:ss')}.zip`;
           }
 
-          if (isDownload) {
-            let ariaNgUrl = `http://aria2.me/aria-ng/#!/new/task?url=${btoa(
-              downloadUrl
-            )}&header=Cookie:${cookieName}=${cookieValue}&out=${encodeURI(fileName)}`;
+          const ariaNgUrl = `http://aria2.me/aria-ng/#!/new/task?url=${btoa(downloadUrl)}&header=Cookie:${cookieName}=${cookieValue}&out=${encodeURI(fileName)}`;
 
-            console.log('文件名称:', fileName);
-            console.log('下载地址:', downloadUrl);
-            console.log('请求参数:', `Cookie:${cookieName}=${cookieValue}`);
-            console.log('AriaNg URL:', ariaNgUrl);
+          console.log('文件名称:', fileName);
+          console.log('下载地址:', downloadUrl);
+          console.log('请求参数:', `Cookie:${cookieName}=${cookieValue}`);
+          console.log('AriaNg URL:', ariaNgUrl);
 
-            // 发送消息通知提醒使用 ariaNg 下载
-            wyNotify({
-              title: `开始下载: ${fileName}`,
-              description: '点击此处使用 AriaNg 下载',
-              onclick: function () {
-                window.open(ariaNgUrl);
-              },
-            });
+          // 使用 ariaNg 进行下载
+          window.open(ariaNgUrl);
+        }).catch(e => { alert(e.msg) });
+      }
+
+      // 监听 body 的 DOM 变化并将下载入口植入
+      const observeTarget = document.body;
+      const observeConfig = { attributes: true, childList: true, subtree: true };
+      const observeCallback = function (mutations, observer) {
+        for (let mutation of mutations) {
+          if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+            mutation.addedNodes.forEach((node) => {
+              // 判断页面中增加的元素是否是针对文件的下拉菜单
+              if (
+                node.className &&
+                node.className.indexOf('mod-bubble-context-menu') > -1 &&
+                node.__vue__ &&
+                node.__vue__.items.some(e => e.method === 'download')
+              ) {
+                const contextItems = node.querySelectorAll('.menu-item');
+                const newContextItem = document.createElement('li')
+                newContextItem.className = 'menu-item';
+                newContextItem.innerHTML = '<span class="txt">使用 Aria 下载</span>';
+                newContextItem.addEventListener('click', function() {
+                  downloadSelectedFiles();
+                  // 关闭右键菜单
+                  document.dispatchEvent(new Event('mousedown'));
+                });
+                contextItems[0].parentNode.insertBefore(newContextItem, contextItems[0].nextSibling);
+              }
+            })
           }
 
-          return response;
-        },
-        (error) => {
-          console.log('发生错误', error);
-          return Promise.reject(error);
+          // 针对顶部下载菜单
+          if (
+            mutation.type === 'attributes' &&
+            mutation.attributeName === 'style' &&
+            mutation.target.className.indexOf('mod-action-wrap-menu') > -1 &&
+            mutation.target.style.display !== 'none' &&
+            mutation.target.querySelectorAll('#action-item-aria').length === 0
+          ) {
+            const actionItems = mutation.target.querySelectorAll('.action-item');
+            const newActionItem = document.createElement('div');
+            newActionItem.id = 'action-item-aria'
+            newActionItem.className = 'action-item';
+            newActionItem.innerHTML = '<div class="action-item-con"><i class="icon icon-download"></i><span class="act-txt">使用 Aria 下载</span></div>';
+            newActionItem.addEventListener('click', function () {
+              downloadSelectedFiles();
+            });
+            mutation.target.insertBefore(newActionItem, actionItems[0].nextSibling);
+          }
         }
-      );
-    },
-  }, [chunkId]);
-
+      }
+      const observeInstance = new MutationObserver(observeCallback);
+      observeInstance.observe(observeTarget, observeConfig);
+    }
+  }, [injectChunkId]);
 
   // 打开离线下载窗口并填写链接
   const openModalBt = (text = '') => {
@@ -276,10 +175,10 @@
 
     // 剪切板数据对象
     let clipboardData = event.clipboardData || window.clipboardData;
-    
+
     // 剪切板对象可以获取
     if (!clipboardData) { return; }
-    
+
     let paste = clipboardData.getData('text');
     let isEd2k = /^ed2k:\/\//ig.test(paste);
     let isMagent = /^magnet:/ig.test(paste);
