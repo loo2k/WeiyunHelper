@@ -4,6 +4,7 @@ WeiyunHelper 是微云的辅助脚本，拥有以下功能：
 
 - [x] 🔗 下载文件时支持通过 AriaNg 下载
 - [x] 🧲 支持粘贴自动（快捷）下载磁力链链接
+- [x] 🎊 同时支持个人文件管理页和分享页的 AriaNG 下载
 - [ ] 💡 你有什么[想法](https://github.com/loo2k/WeiyunHelper/issues)？
 
 ## 如何使用
@@ -11,6 +12,14 @@ WeiyunHelper 是微云的辅助脚本，拥有以下功能：
 使用前需要先安装 [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) 扩展，安装完成后访问下方的安装地址：
 
 👉🏼 [https://greasyfork.org/zh-CN/scripts/402669-weiyunhelper](https://greasyfork.org/zh-CN/scripts/402669-weiyunhelper)
+
+### 配置 AriaNg
+
+因为目前没有直接调用 Aria2 的接口，依赖了 AriaNg 的服务。所以需要使用的用户使用 [https://aria2.me/aria-ng/](https://aria2.me/aria-ng/) 进行对应的设置后使用。
+
+如果你希望支持直接调用 Aria2 的接口也可以发起 PR 贡献你的代码 :)
+
+## 功能概览
 
 **🔗 下载文件时支持通过 AriaNg 下载**
 
@@ -23,15 +32,3 @@ WeiyunHelper 是微云的辅助脚本，拥有以下功能：
 ## 声明
 
 WeiyunHelper 仅供个人学习交流，严禁用于商业用途。
-
-## License
-
-The MIT License (MIT)
-
-Copyright (c) 2015 Chris Kibble
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
