@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         WeiyunHelper - 微云 Arial 下载辅助
+// @name         WeiyunHelper - 微云 Aria2 下载辅助脚本
 // @namespace    https://github.com/loo2k/WeiyunHelper/
 // @version      0.0.6
 // @description  微云下载时文件支持导出到 aria2 下载，支持分享页面及个人云盘管理页
