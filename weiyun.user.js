@@ -4,7 +4,7 @@
 // @version      0.0.6
 // @description  微云下载时文件支持导出到 aria2 下载，支持分享页面及个人云盘管理页
 // @author       Luke
-// @match        *.weiyun.com/*
+// @match        *://*.weiyun.com/*
 // @grant        none
 // @run-at       document-end
 // @updateURL    https://github.com/loo2k/WeiyunHelper/raw/master/weiyun.user.js
