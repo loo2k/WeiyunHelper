@@ -15,7 +15,7 @@ WeiyunHelper 是微云的辅助脚本，拥有以下功能：
 
 ### 配置 AriaNg
 
-因为目前没有直接调用 Aria2 的接口，依赖了 AriaNg 的服务。所以需要使用的用户使用 [https://aria2.me/aria-ng/](https://aria2.me/aria-ng/) 进行对应的设置后使用。
+因为目前没有直接调用 Aria2 的接口，依赖了 AriaNg 的服务。所以需要使用的用户使用 [http://ariang.mayswind.net/latest/](http://ariang.mayswind.net/latest/) 进行对应的设置后使用。
 
 如果你希望支持直接调用 Aria2 的接口也可以发起 PR 贡献你的代码 :)
 
