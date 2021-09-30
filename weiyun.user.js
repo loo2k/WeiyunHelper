@@ -56,7 +56,7 @@
       fileName = `微云合并下载文件_${new Date().Format('yyyy-MM-dd hh:mm:ss')}.zip`;
     }
 
-    const ariaNgUrl = `http://aria2.me/aria-ng/#!/new/task?url=${btoa(downloadUrl)}&header=Cookie:${cookieName}=${cookieValue}&out=${encodeURI(fileName)}`;
+    const ariaNgUrl = `http://ariang.mayswind.net/latest/#!/new/task?url=${btoa(downloadUrl)}&header=Cookie:${cookieName}=${cookieValue}&out=${encodeURI(fileName)}`;
 
     console.log('文件名称:', fileName);
     console.log('下载地址:', downloadUrl);
