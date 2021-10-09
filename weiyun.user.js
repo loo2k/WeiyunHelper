@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WeiyunHelper - 微云 Aria2 下载辅助脚本
 // @namespace    https://github.com/loo2k/WeiyunHelper/
-// @version      0.0.6
+// @version      0.0.7
 // @description  微云下载时文件支持导出到 aria2 下载，支持分享页面及个人云盘管理页
 // @author       Luke
 // @match        *://*.weiyun.com/*
@@ -56,7 +56,7 @@
       fileName = `微云合并下载文件_${new Date().Format('yyyy-MM-dd hh:mm:ss')}.zip`;
     }
 
-    const ariaNgUrl = `http://ariang.mayswind.net/latest/#!/new/task?url=${btoa(downloadUrl)}&header=Cookie:${cookieName}=${cookieValue}&out=${encodeURI(fileName)}`;
+    const ariaNgUrl = `http://aria2.pigfly.im/ariang/#!/new/task?url=${btoa(downloadUrl)}&header=Cookie:${cookieName}=${cookieValue}&out=${encodeURI(fileName)}`;
 
     console.log('文件名称:', fileName);
     console.log('下载地址:', downloadUrl);
